@@ -1,6 +1,6 @@
 # Author Fixture Validation
 
-This repository was validated using the data in `C:\Users\PMLS\Desktop\Test_Data`, which corresponds to the author-provided fixtures associated with these publications:
+This repository was validated using the data in `Test_Data`, which corresponds to the author-provided fixtures associated with these publications:
 
 - Alquezar-Baeta et al., 2019, *OpenCASA: A new open-source and scalable tool for sperm quality analysis*, DOI: 10.1371/journal.pcbi.1006691.
 - Yaniz et al., 2020, *Expanding the Limits of Computer-Assisted Sperm Analysis through the Development of Open Software*, DOI: 10.3390/biology9080207.
@@ -35,10 +35,6 @@ Seven valid AVI files reproduced the supplied baseline exactly, to three decimal
 
 Run this regression when the author fixture directory is available:
 
-```powershell
-cd OpenCASA_
-mvn clean "-Dopencasa.motility.fixtureDirectory=C:\Users\PMLS\Desktop\Test_Data\Motility\data\Sample_21_20170515" "-Dopencasa.motility.baseline=C:\Users\PMLS\Desktop\Test_Data\Motility\data\Sample_21_20170515\Results_Backup_20260831_103302\Average_Motility.csv" "-Dtest=functions.VideoRecognitionTest" test
-```
 
 ## Fixture Coverage
 
