@@ -81,7 +81,7 @@ public class MultifluoParams {
       else
         fSeparator = File.separator;
       String settingsPath = System.getProperty("user.dir") + fSeparator + "settings.config";
-      FileInputStream streamIn = new FileInputStream(settingsPath);
+      FileInputStream streamIn = new FileInputStream(SettingsFile.get());
       ObjectInputStream objectinputstream = new ObjectInputStream(streamIn);
       Preferences.importPreferences(objectinputstream);
     } catch (Exception e) {
@@ -114,7 +114,7 @@ public class MultifluoParams {
       else
         fSeparator = File.separator;
       String settingsPath = System.getProperty("user.dir") + fSeparator + "settings.config";
-      FileOutputStream fos = new FileOutputStream(settingsPath);
+      FileOutputStream fos = new FileOutputStream(SettingsFile.get());
       ObjectOutputStream oos = new ObjectOutputStream(fos);
       MultifluoParams.prefs.exportSubtree(oos);
       oos.close();

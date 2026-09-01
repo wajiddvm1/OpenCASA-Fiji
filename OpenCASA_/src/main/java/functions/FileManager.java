@@ -83,13 +83,7 @@ public class FileManager {
    * @return
    */
   public String getFilename(String path) {
-    String os = System.getProperty("os.name").toLowerCase();
-    String[] parts;
-    if(os.indexOf("win") >= 0)
-      parts = path.split(File.separator+File.separator);
-    else
-      parts = path.split(File.separator);
-    return removeExtension(parts[parts.length - 1]);
+    return removeExtension(new File(path).getName());
   }
 
   public List<String> getFiles(String path) {
@@ -108,13 +102,8 @@ public class FileManager {
    * @return
    */
   public String getParentDirectory(String path) {
-    String os = System.getProperty("os.name").toLowerCase();
-    String[] parts;
-    if(os.indexOf("win") >= 0)
-      parts = path.split(File.separator+File.separator);
-    else
-      parts = path.split(File.separator);
-    return parts[parts.length - 2];
+    File parent = new File(path).getParentFile();
+    return parent == null ? "" : parent.getName();
   }
 
   public List<String> getSubfolders(String path) {
@@ -134,13 +123,7 @@ public class FileManager {
    * @return
    */
   public boolean isAVI(String filename) {
-    String[] parts = filename.split("\\.");
-    if (parts.length < 2)
-      return false;
-    if (parts[parts.length-1].equals("avi"))
-      return true;
-    else
-      return false;
+    return filename != null && filename.toLowerCase().endsWith(".avi");
   }
 
   /**
@@ -221,8 +204,8 @@ public class FileManager {
   }
   
   public String removeExtension(String filename) {
-    String[] parts = filename.split("\\.");
-    return parts[0];
+    int extensionIndex = filename.lastIndexOf('.');
+    return extensionIndex > 0 ? filename.substring(0, extensionIndex) : filename;
   }
 
   // /**

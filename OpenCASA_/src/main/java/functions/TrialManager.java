@@ -130,7 +130,7 @@ public class TrialManager {
       // String folder = Utils.selectFolder();
       if (dir == null || dir.equals(""))
         return;
-      FileOutputStream fos = new FileOutputStream(dir + "\\" + filename);
+      FileOutputStream fos = new FileOutputStream(new java.io.File(dir, filename));
       ObjectOutputStream oos = new ObjectOutputStream(fos);
       oos.writeObject(trials);
       oos.close();
@@ -150,7 +150,7 @@ public class TrialManager {
     Simulation sim = new PersistentRandomWalker(beta, responsiveCells);
     ImagePlus imp = sim.createSimulation();
     String trialType = "Beta: " + Double.toString(beta) + ";Resp: " + Double.toString(responsiveCells);
-    String simName = trialType + "\\" + trialID;
+    String simName = new java.io.File(trialType, trialID).getPath();
     Trial tr = getTrialFromImp(imp, simName);
     return tr;
   }

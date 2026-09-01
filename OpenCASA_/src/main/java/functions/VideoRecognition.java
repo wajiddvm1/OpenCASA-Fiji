@@ -61,6 +61,7 @@ import ij.ImageStack;
 import ij.measure.Measurements;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
+import ij.process.ImageProcessor;
 
 public class VideoRecognition implements Measurements {
 
@@ -94,11 +95,23 @@ public class VideoRecognition implements Measurements {
     // ************************************************************
     //System.out.println("identifyTracks...");
     SerializableList theTracks = idenfityTracks(theCells, imp.getStackSize());
+    int detectedCells = countCells(theCells);
+    int linkedTracks = theTracks.size();
     // Filtering tracks by length
     SignalProcessing sp = new SignalProcessing();
     theTracks = sp.filterTracksByLength(theTracks);
+    IJ.log("OpenCASA: detected " + detectedCells + " particles, linked " + linkedTracks + " tracks, retained "
+        + theTracks.size() + " tracks with at least " + Params.minTrackLength + " frames.");
     // IJ.saveString(Utils.printXYCoords(theTracks),"");
     return theTracks;
+  }
+
+  private int countCells(List[] cells) {
+    int count = 0;
+    for (List frameCells : cells) {
+      count += frameCells.size();
+    }
+    return count;
   }
 
   /******************************************************/
@@ -129,7 +142,9 @@ public class VideoRecognition implements Measurements {
       spermatozoa[iFrame - 1] = new ArrayList();
       rt.reset();
       ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, minSize, maxSize);
-      pa.analyze(imp, stack.getProcessor(iFrame));
+      ImageProcessor processor = stack.getProcessor(iFrame);
+      processor.setThreshold(0, 0, ImageProcessor.NO_LUT_UPDATE);
+      pa.analyze(imp, processor);
       float[] sxRes = rt.getColumn(ResultsTable.X_CENTROID);
       float[] syRes = rt.getColumn(ResultsTable.Y_CENTROID);
       float[] bxRes = rt.getColumn(ResultsTable.ROI_X);
@@ -289,7 +304,9 @@ public class VideoRecognition implements Measurements {
       spermatozoa[iFrame - 1] = new ArrayList();
       rt.reset();
       ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, minSize, maxSize);
-      pa.analyze(imp, stack.getProcessor(iFrame));
+      ImageProcessor processor = stack.getProcessor(iFrame);
+      processor.setThreshold(0, 0, ImageProcessor.NO_LUT_UPDATE);
+      pa.analyze(imp, processor);
       float[] sxRes = rt.getColumn(ResultsTable.X_CENTROID);
       float[] syRes = rt.getColumn(ResultsTable.Y_CENTROID);
       float[] bxRes = rt.getColumn(ResultsTable.ROI_X);
@@ -355,7 +372,9 @@ public class VideoRecognition implements Measurements {
       square[iFrame - 1] = new ArrayList();
       rt.reset();
       ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, minSize, maxSize);
-      pa.analyze(imp, stack.getProcessor(iFrame));
+      ImageProcessor processor = stack.getProcessor(iFrame);
+      processor.setThreshold(0, 0, ImageProcessor.NO_LUT_UPDATE);
+      pa.analyze(imp, processor);
       float[] bxRes = rt.getColumn(ResultsTable.ROI_X);
       float[] byRes = rt.getColumn(ResultsTable.ROI_Y);
       float[] widthRes = rt.getColumn(ResultsTable.ROI_WIDTH);
