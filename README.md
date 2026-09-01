@@ -12,6 +12,8 @@ The project includes validation datasets under `Test_data/` for chemotaxis, morp
 ## Current version
 This fork is the active maintained version for Fiji/ImageJ compatibility and fixture validation. It is intended as the current project build for users working with modern Fiji and Java-based analysis workflows.
 
+This repository includes the packaged Fiji plugin artifact, `OpenCASA_Fiji.jar`, together with the required supporting files needed to run the plugin. The `Test_data/` directory contains the original OpenCASA validation datasets that were used to verify the workflow and remain the validated reference data for the project.
+
 ## Specifications
 
 OpenCASA is built against ImageJ 1.54p and is intended for current Fiji distributions. The plugin is compiled for Java 8, so it runs with both Fiji's Java 8 bundles and newer Fiji installations that include Java 21. There are no special operating-system requirements, but video analysis requires substantial memory. Allocate at least 5 GB of heap memory, or approximately 2.5 times the size of the largest file to be analyzed. For testing, AVI videos and JPEG or PNG images were used.
