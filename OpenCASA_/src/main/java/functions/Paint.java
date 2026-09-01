@@ -214,11 +214,11 @@ public class Paint {
           Cell newCell = null;
           for (; jT.hasNext();) {
             newCell = (Cell) jT.next();
-            if (kinematics.getVelocityTrackType(aTrack) == "Slow")
+            if ("Slow".equals(kinematics.getVelocityTrackType(aTrack)))
               ip.setColor(getColor(Params.vclSlowColor));
-            else if (kinematics.getVelocityTrackType(aTrack) == "Normal")
+            else if ("Normal".equals(kinematics.getVelocityTrackType(aTrack)))
               ip.setColor(getColor(Params.vclNormalColor));
-            else if (kinematics.getVelocityTrackType(aTrack) == "Fast")
+            else if ("Fast".equals(kinematics.getVelocityTrackType(aTrack)))
               ip.setColor(getColor(Params.vclFastColor));
             // ip.setValue(color);
             ip.moveTo((int) oldCell.x * upRes, (int) oldCell.y * upRes);
@@ -243,13 +243,19 @@ public class Paint {
             ip.drawString("" + newCell.trackNr);
           }
         } else {
+          if (oldCell.z == iFrame) {
+            ip.moveTo((int) (oldCell.x / Params.pixelWidth),
+                (int) ((oldCell.y + oldCell.height) / Params.pixelHeight));
+            ip.setColor(Color.white);
+            ip.drawString("**");
+          }
           for (; jT.hasNext();) {
             Cell newCell = (Cell) jT.next();
             if (newCell.z == iFrame) {
               //ip.moveTo((int) ((oldCell.x+oldCell.width/2) / Params.pixelWidth + 0),
                //   doOffset((int) ((oldCell.y+oldCell.height/2) / Params.pixelHeight), yWidth, 5));
-              ip.moveTo((int) (oldCell.x / Params.pixelWidth + 0),
-                  (int) ((oldCell.y+oldCell.height) / Params.pixelHeight));              
+              ip.moveTo((int) (newCell.x / Params.pixelWidth + 0),
+                  (int) ((newCell.y + newCell.height) / Params.pixelHeight));
               ip.setColor(Color.white);
               ip.drawString("**");
               //ip.drawString("" + newCell.trackNr);

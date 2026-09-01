@@ -22,6 +22,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,6 +38,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
@@ -92,6 +94,12 @@ public class ImageAnalysisWindow extends JFrame {
   protected JButton prevBtn;
   protected JButton nextBtn;
   protected JButton saveBtn;
+  protected JButton zoomInBtn;
+  protected JButton zoomOutBtn;
+  private JScrollPane imageScrollPane;
+  private int displayedImageHeight;
+  private int displayedImageWidth;
+  private double zoomFactor = 1.0;
 
   protected List<Cell> spermatozoa = new ArrayList<Cell>();
   protected double threshold = -1.0;
@@ -123,12 +131,20 @@ public class ImageAnalysisWindow extends JFrame {
     sldGreenThreshold.setVisible(false);// By default
     sldBlueThreshold.setVisible(false);// By default
     imgLabel = new JLabel();// The same as slider bar
+    imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    imgLabel.setVerticalAlignment(SwingConstants.CENTER);
     btnOtsu = new JRadioButton("Otsu");
     btnMinimum = new JRadioButton("Minimum");
     btnGroup = new ButtonGroup();
     prevBtn = new JButton("Previous");
     nextBtn = new JButton("Next");
     saveBtn = new JButton("Save");
+    zoomInBtn = new JButton("+");
+    zoomInBtn.setToolTipText("Zoom in image");
+    zoomOutBtn = new JButton("-");
+    zoomOutBtn.setToolTipText("Zoom out image");
+    imageScrollPane = new JScrollPane(imgLabel);
+    imageScrollPane.setMinimumSize(new Dimension(320, 240));
     genericLabel1 = new JLabel();
     genericLabel2 = new JLabel();
     genericLabel3 = new JLabel();
@@ -307,15 +323,21 @@ public class ImageAnalysisWindow extends JFrame {
    */
   public void setImage() {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    double w = screenSize.getWidth();
-    double h = screenSize.getHeight();
-    int targetWidth = (int) (w * resizeFactor);
-    int targetHeight = (int) (h * resizeFactor);
-    ImageProcessor ip = impDraw.getProcessor();
-    ip.setInterpolationMethod(ImageProcessor.BILINEAR);
-    ip = ip.resize(targetWidth, targetHeight);
-    impDraw.setProcessor(ip);
-    imgLabel.setIcon(new ImageIcon(impDraw.getImage()));
+    int maxWidth = (int) (screenSize.getWidth() * resizeFactor);
+    int maxHeight = (int) (screenSize.getHeight() * 0.55);
+    double fitFactor = Math.min(1.0,
+      Math.min(maxWidth / (double) impDraw.getWidth(), maxHeight / (double) impDraw.getHeight()));
+    double displayFactor = Math.max(0.1, fitFactor * zoomFactor);
+    displayedImageWidth = Math.max(1, (int) Math.round(impDraw.getWidth() * displayFactor));
+    displayedImageHeight = Math.max(1, (int) Math.round(impDraw.getHeight() * displayFactor));
+    Image displayImage = impDraw.getImage().getScaledInstance(displayedImageWidth, displayedImageHeight,
+      Image.SCALE_SMOOTH);
+    imgLabel.setIcon(new ImageIcon(displayImage));
+    imgLabel.setPreferredSize(new Dimension(displayedImageWidth, displayedImageHeight));
+    imageScrollPane.setPreferredSize(
+      new Dimension(Math.min(displayedImageWidth, maxWidth), Math.min(displayedImageHeight, maxHeight)));
+    setResizeFactor();
+    imageScrollPane.revalidate();
     imgLabel.repaint();
   }
 
@@ -335,7 +357,6 @@ public class ImageAnalysisWindow extends JFrame {
     impDraw = impOrig.duplicate();
     title.setText(impOrig.getTitle());
     setImage();
-    setResizeFactor();
   }
 
   /**
@@ -360,12 +381,8 @@ public class ImageAnalysisWindow extends JFrame {
    * the showed image size.
    */
   public void setResizeFactor() {
-    double origW = impOrig.getWidth();
-    double origH = impOrig.getHeight();
-    double resizeW = impDraw.getWidth();
-    double resizeH = impDraw.getHeight();
-    xFactor = origW / resizeW;
-    yFactor = origH / resizeH;
+    xFactor = impOrig.getWidth() / (double) displayedImageWidth;
+    yFactor = impOrig.getHeight() / (double) displayedImageHeight;
   }
 
   private void setSlidersAutoThreshold() {
@@ -480,14 +497,19 @@ public class ImageAnalysisWindow extends JFrame {
     c.gridy = 8;
     c.gridwidth = 7;
     c.gridheight = 1;
-    c.ipady = 10;
-    panel.add(imgLabel, c);
+    c.weightx = 1;
+    c.weighty = 1;
+    c.fill = GridBagConstraints.BOTH;
+    panel.add(imageScrollPane, c);
     initImage(); // Initialization with the first image available
 
     c.gridx = 0;
     c.gridy = 9;
     c.gridwidth = 10;
     c.gridheight = 1;
+    c.weightx = 0;
+    c.weighty = 0;
+    c.fill = GridBagConstraints.HORIZONTAL;
     panel.add(new JSeparator(SwingConstants.HORIZONTAL), c);
 
     // Add action listener
@@ -510,6 +532,24 @@ public class ImageAnalysisWindow extends JFrame {
     c.gridwidth = 1;
     c.gridheight = 1;
     panel.add(prevBtn, c);
+
+    zoomOutBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        zoomFactor = Math.max(0.25, zoomFactor / 1.25);
+        setImage();
+      }
+    });
+    c.gridx = 1;
+    panel.add(zoomOutBtn, c);
+
+    zoomInBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        zoomFactor = Math.min(4.0, zoomFactor * 1.25);
+        setImage();
+      }
+    });
+    c.gridx = 2;
+    panel.add(zoomInBtn, c);
 
     // Add action listener
     saveBtn.addActionListener(new ActionListener() {
@@ -544,6 +584,10 @@ public class ImageAnalysisWindow extends JFrame {
 
     this.setContentPane(panel);
     this.pack();
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    this.setSize(Math.min(getWidth(), (int) (screenSize.getWidth() * 0.9)),
+      Math.min(getHeight(), (int) (screenSize.getHeight() * 0.9)));
+    this.setLocationRelativeTo(null);
     this.setVisible(true);
   }
 

@@ -23,6 +23,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -38,6 +39,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -81,6 +83,10 @@ public class CellCountWindow extends JFrame {
 	private JButton nextBtn;
 	private JButton prevBtn;
 	protected JButton saveBtn;
+	private JButton zoomInBtn;
+	private JButton zoomOutBtn;
+	private JScrollPane imageScrollPane;
+	private double zoomFactor = 1.0;
 	/** Button to hide/show the squares */
 	private JButton cuadricula;
 	/** TextField to write the dilution of the current image */
@@ -111,6 +117,14 @@ public class CellCountWindow extends JFrame {
 		nextBtn = new JButton("Next");
 		prevBtn = new JButton("Previous");
 		saveBtn = new JButton("Save");
+		imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		imgLabel.setVerticalAlignment(SwingConstants.CENTER);
+		zoomInBtn = new JButton("+");
+		zoomInBtn.setToolTipText("Zoom in image");
+		zoomOutBtn = new JButton("-");
+		zoomOutBtn.setToolTipText("Zoom out image");
+		imageScrollPane = new JScrollPane(imgLabel);
+		imageScrollPane.setMinimumSize(new Dimension(320, 240));
 		cuadricula = new JButton("Squares");
 		diluc = new JTextField("1", 4);
 		btnGroup = new ButtonGroup();
@@ -243,7 +257,7 @@ public class CellCountWindow extends JFrame {
 		c.fill = GridBagConstraints.BOTH;
 		c.anchor = GridBagConstraints.NORTHWEST;
 		c.weighty = 1;
-		panel.add(imgLabel, c);
+		panel.add(imageScrollPane, c);
 		processImage();
 
 		c.gridy += 1;
@@ -267,7 +281,7 @@ public class CellCountWindow extends JFrame {
 			}
 		});
 		c.gridy += 1;
-		c.gridwidth = 4;
+		c.gridwidth = 2;
 		c.gridheight = 1;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weightx = 1;
@@ -275,6 +289,25 @@ public class CellCountWindow extends JFrame {
 		c.anchor = GridBagConstraints.CENTER;
 		prevBtn.setEnabled(false);
 		panel.add(prevBtn, c);
+
+		zoomOutBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				zoomFactor = Math.max(0.25, zoomFactor / 1.25);
+				setImage();
+			}
+		});
+		c.gridx = 2;
+		c.gridwidth = 1;
+		panel.add(zoomOutBtn, c);
+
+		zoomInBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				zoomFactor = Math.min(4.0, zoomFactor * 1.25);
+				setImage();
+			}
+		});
+		c.gridx = 3;
+		panel.add(zoomInBtn, c);
 
 		saveBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -307,6 +340,10 @@ public class CellCountWindow extends JFrame {
 
 		this.setContentPane(panel);
 		this.pack();
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setSize(Math.min(getWidth(), (int) (screenSize.getWidth() * 0.9)),
+				Math.min(getHeight(), (int) (screenSize.getHeight() * 0.9)));
+		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 	}
 
@@ -459,16 +496,19 @@ public class CellCountWindow extends JFrame {
 	public void setImage() {
 		setConc(Double.parseDouble(diluc.getText()));
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		double w = screenSize.getWidth();
-		double h = screenSize.getHeight();
-		int targetWidth = (int) (w * 0.7);
-		int targetHeight = (int) (h * 0.7);
+		int maxWidth = (int) (screenSize.getWidth() * 0.7);
+		int maxHeight = (int) (screenSize.getHeight() * 0.55);
 		ImagePlus imp = cuadricula.isSelected() ? impDraw.duplicate() : images.get(imgIndex).duplicate();
-		ImageProcessor ip = imp.getProcessor();
-		ip.setInterpolationMethod(ImageProcessor.BILINEAR);
-		ip = ip.resize(targetWidth, targetHeight);
-		imp.setProcessor(ip);
-		imgLabel.setIcon(new ImageIcon(imp.getImage()));
+		double fitFactor = Math.min(1.0,
+				Math.min(maxWidth / (double) imp.getWidth(), maxHeight / (double) imp.getHeight()));
+		double displayFactor = Math.max(0.1, fitFactor * zoomFactor);
+		int displayWidth = Math.max(1, (int) Math.round(imp.getWidth() * displayFactor));
+		int displayHeight = Math.max(1, (int) Math.round(imp.getHeight() * displayFactor));
+		Image displayImage = imp.getImage().getScaledInstance(displayWidth, displayHeight, Image.SCALE_SMOOTH);
+		imgLabel.setIcon(new ImageIcon(displayImage));
+		imgLabel.setPreferredSize(new Dimension(displayWidth, displayHeight));
+		imageScrollPane.setPreferredSize(new Dimension(Math.min(displayWidth, maxWidth), Math.min(displayHeight, maxHeight)));
+		imageScrollPane.revalidate();
 		imgLabel.repaint();
 		ImagePlus impOrig = images.get(imgIndex);
 		this.setTitle(impOrig.getTitle());

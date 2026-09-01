@@ -164,8 +164,11 @@ public class Motility extends SwingWorker<Boolean, String> {
     String file = fm.selectFile();
     if (file == null)
       return;
+    ImagePlus imp = fm.getAVI(file);
+    if (imp == null)
+      return;
     TrialManager tm = new TrialManager();
-    Trial trial = tm.getTrialFromAVI(file);
+    Trial trial = tm.getTrialFromImp(imp, file);
     // Calculate motility
     ResultsTable rtIndividual = new ResultsTable();
     ResultsTable rtAverage = new ResultsTable();
@@ -181,7 +184,6 @@ public class Motility extends SwingWorker<Boolean, String> {
     rtAverage.showRowNumbers(false);
     rtAverage.show("Average Motility");
     // Draw trajectories
-    ImagePlus imp = fm.getAVI(file);
     Paint paint = new Paint();
     paint.draw(imp, trial.tracks);
     imp.show();
@@ -189,7 +191,9 @@ public class Motility extends SwingWorker<Boolean, String> {
       saveVideoTracks(trial);
     if (Params.printXY) {
       Utils utils = new Utils();
-      IJ.saveString(utils.printXYCoords(trial.tracks), "");
+      Path xyOutput = Paths.get(trial.source).resolveSibling(trial.ID + "_XY_coordinates.tsv");
+      IJ.saveString(utils.printXYCoords(trial.tracks), xyOutput.toString());
+      IJ.log("OpenCASA: saved track coordinates to " + xyOutput);
     }
   }
 
