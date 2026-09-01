@@ -9,12 +9,9 @@ The key changes in this fork include compatibility updates for Fiji/ImageJ build
 ## Validation against OpenCASA data
 The project includes validation datasets under `Test_data/` for chemotaxis, morphometry, and viability analyses. These fixtures are used to confirm that the plugin still performs the expected particle detection, tracking, and analysis workflow after the Fiji compatibility changes. The validation focuses on confirming that the sample data can be processed successfully and that the output remains consistent with the repository's expected behavior.
 
-## Version 2.0
-Go to https://github.com/calquezar/OpenCASA/tree/51d10244d0cbab2bfba61628f7e43eb2e060057e in order to download the source code of OpenCASA v2.0.
+## Current version
+This fork is the active maintained version for Fiji/ImageJ compatibility and fixture validation. It is intended as the current project build for users working with modern Fiji and Java-based analysis workflows.
 
-## Version 1.0
-Go to https://github.com/calquezar/OpenCASA/tree/b71936668093a7d9052466b4f97e5537a8ef49ed in order to download the source code of OpenCASA v1.0.
- 
 ## Specifications
 
 OpenCASA is built against ImageJ 1.54p and is intended for current Fiji distributions. The plugin is compiled for Java 8, so it runs with both Fiji's Java 8 bundles and newer Fiji installations that include Java 21. There are no special operating-system requirements, but video analysis requires substantial memory. Allocate at least 5 GB of heap memory, or approximately 2.5 times the size of the largest file to be analyzed. For testing, AVI videos and JPEG or PNG images were used.
