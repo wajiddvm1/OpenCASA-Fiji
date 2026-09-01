@@ -1,6 +1,14 @@
 # OpenCASA
 An open-source tool for sperm quality analysis. See this article for more details: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006691
 
+## Fiji compatibility fork
+This repository is a fork focused on modernizing OpenCASA for Fiji/ImageJ usage and validating the plugin against the bundled OpenCASA fixture datasets. The work in this branch updates the project for current Fiji compatibility, keeps the plugin buildable with recent Java/Maven setups, and checks the analysis pipeline against representative test data used by the project.
+
+The key changes in this fork include compatibility updates for Fiji/ImageJ builds, validation of the analysis pipeline with the included fixture data, and verification that the core detection and tracking algorithms continue to run as expected with the repository's sample datasets.
+
+## Validation against OpenCASA data
+The project includes validation datasets under `Test_data/` for chemotaxis, morphometry, and viability analyses. These fixtures are used to confirm that the plugin still performs the expected particle detection, tracking, and analysis workflow after the Fiji compatibility changes. The validation focuses on confirming that the sample data can be processed successfully and that the output remains consistent with the repository's expected behavior.
+
 ## Version 2.0
 Go to https://github.com/calquezar/OpenCASA/tree/51d10244d0cbab2bfba61628f7e43eb2e060057e in order to download the source code of OpenCASA v2.0.
 
