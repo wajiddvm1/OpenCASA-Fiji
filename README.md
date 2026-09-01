@@ -1,20 +1,26 @@
-# OpenCASA
-An open-source tool for sperm quality analysis. See this article for more details: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006691
+# OpenCASA Fiji
+OpenCASA is a sperm analysis tool for Fiji/ImageJ. This fork keeps the project working with current Fiji setups and includes the validated OpenCASA reference data used to check the analysis pipeline.
 
-## Fiji compatibility fork
-This repository is a fork focused on modernizing OpenCASA for Fiji/ImageJ usage and validating the plugin against the bundled OpenCASA fixture datasets. The work in this branch updates the project for current Fiji compatibility, keeps the plugin buildable with recent Java/Maven setups, and checks the analysis pipeline against representative test data used by the project.
+## What is included
+- The ready-to-use plugin file: OpenCASA_Fiji.jar
+- The original validated OpenCASA sample data in the Test_data folder
+- A simple setup for running the plugin in Fiji
 
-The key changes in this fork include compatibility updates for Fiji/ImageJ builds, validation of the analysis pipeline with the included fixture data, and verification that the core detection and tracking algorithms continue to run as expected with the repository's sample datasets.
+## Quick start
+1. Download the plugin file named OpenCASA_Fiji.jar from the project folder.
+2. Copy it into your Fiji plugins folder.
+3. Restart Fiji.
+4. Open Plugins > OpenCASA.
 
-## Validation against OpenCASA data
-The project includes validation datasets under `Test_data/` for chemotaxis, morphometry, and viability analyses. These fixtures are used to confirm that the plugin still performs the expected particle detection, tracking, and analysis workflow after the Fiji compatibility changes. The validation focuses on confirming that the sample data can be processed successfully and that the output remains consistent with the repository's expected behavior.
+## Validation data
+The Test_data folder contains the original OpenCASA example datasets that were validated for this project. These files are not new experimental data; they are the checked reference datasets used to confirm the plugin works correctly.
 
-## Version 2.0
-Go to https://github.com/calquezar/OpenCASA/tree/51d10244d0cbab2bfba61628f7e43eb2e060057e in order to download the source code of OpenCASA v2.0.
+## Notes for users
+This version is designed for normal Fiji users who want the plugin to work with the current environment. The main goal is to keep the tool easy to install and reliable for analysis workflows.
 
-## Version 1.0
-Go to https://github.com/calquezar/OpenCASA/tree/b71936668093a7d9052466b4f97e5537a8ef49ed in order to download the source code of OpenCASA v1.0.
- 
+## More information
+For the original scientific background, see the OpenCASA paper: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006691
+
 ## Specifications
 
 OpenCASA is built against ImageJ 1.54p and is intended for current Fiji distributions. The plugin is compiled for Java 8, so it runs with both Fiji's Java 8 bundles and newer Fiji installations that include Java 21. There are no special operating-system requirements, but video analysis requires substantial memory. Allocate at least 5 GB of heap memory, or approximately 2.5 times the size of the largest file to be analyzed. For testing, AVI videos and JPEG or PNG images were used.
